@@ -17,3 +17,4 @@ __pycache__
 /out
 /pyspark
 /spark/tests
+/.idea
