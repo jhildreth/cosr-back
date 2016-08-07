@@ -108,3 +108,46 @@ def test_get_hyperlinks_base_tag():
     assert len(links) == 1
     assert links[0]["href"].url == "https://example.com/d1/page1?q=2&a=b#xxx"
     assert links[0]["words"] == ["Y"]
+
+
+def test_get_hyperlinks_no_follow_meta_tag():
+
+    links = _links("""<html><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+                </head><body>
+                before
+                <a href="http://example.com/page1">link text</a>
+                after
+
+                <a href="/page2">relative2</a>
+                <a href="page3?q=1#d">relative3</a>
+                <a href="http://other.example.com/page4">absolute4</a>
+                <a href="//other.example.com/page5?q=1#d">absolute5</a>
+                <a href="https://other.example.com/page6?q=1#d">absolute6</a>
+                <a href="javascript:func()">js1</a>
+
+                </body></html>""")
+
+    # No links returned for document with nofollow in robots meta tag
+    assert len(links) == 0
+
+
+def test_get_hyperlinks_no_follow_http_header():
+
+    doc = HTMLDocument("""<html><head></head><body>
+                before
+                <a href="http://example.com/page1">link text</a>
+                after
+
+                <a href="/page2">relative2</a>
+                <a href="page3?q=1#d">relative3</a>
+                <a href="http://other.example.com/page4">absolute4</a>
+                <a href="//other.example.com/page5?q=1#d">absolute5</a>
+                <a href="https://other.example.com/page6?q=1#d">absolute6</a>
+                <a href="javascript:func()">js1</a>
+
+                </body></html>""",
+                       headers={'X-Robots-Tag': 'NoIndex, NoFollow'}).parse()
+    links = doc.get_hyperlinks()
+
+    # No links returned for document with nofollow in the robots http header
+    assert len(links) == 0

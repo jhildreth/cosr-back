@@ -56,21 +56,30 @@ class HTMLDocument(Document):
 
     def get_internal_hyperlinks(self):
         """ Returns a list of followable URLs to other domains found in the document """
-        return [{
-            "path": href,  # Unresolved raw path!
-            "words": self._split_words(words)
-        } for href, words in self.analysis["internal_hyperlinks"]]
+        if self.has_robots_nofollow():
+            return []
+        else:
+            return [{
+                "path": href,  # Unresolved raw path!
+                "words": self._split_words(words)
+            } for href, words in self.analysis["internal_hyperlinks"]]
 
     def get_external_hyperlinks(self):
         """ Returns a list of followable URLs to other domains found in the document """
-        return self._format_hyperlinks(self.analysis["external_hyperlinks"])
+        if self.has_robots_nofollow():
+            return []
+        else:
+            return self._format_hyperlinks(self.analysis["external_hyperlinks"])
 
     def get_hyperlinks(self):
         """ Returns a list of followable URLs found in the document """
-        return self._format_hyperlinks(
-            self.analysis["internal_hyperlinks"] +
-            self.analysis["external_hyperlinks"]
-        )
+        if self.has_robots_nofollow():
+            return []
+        else:
+            return self._format_hyperlinks(
+                self.analysis["internal_hyperlinks"] +
+                self.analysis["external_hyperlinks"]
+            )
 
     def _format_hyperlinks(self, links):
         """ Formats a list of hyperlinks for return """
