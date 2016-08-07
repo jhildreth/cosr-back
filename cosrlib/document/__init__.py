@@ -145,6 +145,25 @@ class Document(object):
             urls.append(canonical)
         return urls
 
+    def has_robots_noindex(self):
+        """ Determine if document may be indexed according to the Robots meta data. """
+        return 'noindex' in self._get_robots_header()
+
+    def has_robots_nofollow(self):
+        """ Determine if links in document may be followed according to the Robots meta data. """
+        return 'nofollow' in self._get_robots_header()
+
+    def _get_robots_header(self):
+        """ Return the x-robots-tag http header content. """
+        for k, v in self.source_headers.items():
+            # Note: Multiple x-robots-tag headers could exist on a given
+            # http response, but only one could be in the source_headers
+            # dictionary.
+            if k.lower() == 'x-robots-tag':
+                # TODO Check if particular user-agent is targeted?
+                return v.lower()
+        return ''
+
     def _split_words(self, text):
         """ Simple word tokenization from text. """
         # TODO, make this into a proper tokenizer!

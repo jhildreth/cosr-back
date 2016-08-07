@@ -21,7 +21,8 @@ ATTRIBUTES_WHITELIST = frozenset([
 METAS_WHITELIST = frozenset([
     "description",
     "og:description",
-    "og:title"
+    "og:title",
+    "robots"
 ])
 
 

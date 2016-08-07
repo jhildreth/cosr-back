@@ -136,3 +136,18 @@ class HTMLDocument(Document):
                 return None
 
             return canonical_url
+
+    def has_robots_noindex(self):
+        """ Determine if document may be indexed according to the Robots meta data. """
+
+        return (Document.has_robots_noindex(self) or
+                'noindex' in self._get_robots_meta_tag())
+
+    def has_robots_nofollow(self):
+        """ Determine if links in document may be followed according to the Robots meta data. """
+
+        return (Document.has_robots_nofollow(self) or
+                'nofollow' in self._get_robots_meta_tag())
+
+    def _get_robots_meta_tag(self):
+        return self.get_head_metas().get('robots', '').lower()

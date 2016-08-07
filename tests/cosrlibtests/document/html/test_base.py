@@ -152,3 +152,25 @@ def test_get_hyperlinks():
     links = page.get_hyperlinks()
     assert len(links) == 6
     assert links[2]["href"].url == "http://example.com/page3?q=1#d"
+
+
+def test_has_robots_noindex_meta_tag():
+
+    # Document with noindex robots meta tag
+    html = """<html><head><META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    </head><body></body></html>"""
+    page = HTMLDocument(html, url="http://example.com/page.html").parse()
+    assert page.has_robots_noindex() is True
+
+    # Document with no robots meta tag
+    html = """<html><head></head><body></body></html>"""
+    page = HTMLDocument(html, url="http://example.com/page.html").parse()
+    assert page.has_robots_noindex() is False
+
+
+def test_has_robots_noindex_http_header():
+
+    html = """<html><head></head><body></body></html>"""
+    page = HTMLDocument(html, url="http://example.com/page.html",
+                        headers={'X-Robots-Tag': 'NOINDEX'}).parse()
+    assert page.has_robots_noindex() is True
